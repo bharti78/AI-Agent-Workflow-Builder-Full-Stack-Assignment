@@ -1,0 +1,64 @@
+table:
+  schema: public
+  name: organizations
+
+array_relationships:
+  - name: members
+    using:
+      foreign_key_constraint_on:
+        column: org_id
+        table:
+          schema: public
+          name: org_members
+  - name: workflows
+    using:
+      foreign_key_constraint_on:
+        column: org_id
+        table:
+          schema: public
+          name: workflows
+
+object_relationships:
+  - name: usage
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: org_monthly_usage
+        column_mapping:
+          id: organization_id
+
+# ---------------------------------------------------------------------------
+# No insert/delete permission for role "user" on purpose:
+# organizations are created by a trusted Nhost Function during signup/invite
+# flow (running with the admin secret), never directly by client GraphQL.
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - name
+        - quota_allowed
+        - quota_used
+        - quota_period_start
+        - created_at
+        - updated_at
+      filter:
+        members:
+          user_id:
+            _eq: X-Hasura-User-Id
+
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+      filter:
+        members:
+          _and:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - role:
+                _eq: owner
+      check: null

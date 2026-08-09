@@ -1,0 +1,84 @@
+table:
+  schema: public
+  name: org_members
+
+object_relationships:
+  - name: organization
+    using:
+      foreign_key_constraint_on: org_id
+  - name: user
+    using:
+      manual_configuration:
+        remote_table:
+          schema: auth
+          name: users
+        column_mapping:
+          user_id: id
+
+# ---------------------------------------------------------------------------
+# Select: any member of the org can see the org's member/role list
+# (needed for the UI to show "who's on this team").
+#
+# Insert/Update/Delete: owner ONLY. This is the enforcement point for
+# section 7: "Editor cannot manage organization members."
+# The self-join filter proves the *acting* user is an owner of the SAME
+# org as the row being written (org_id in the check must match an
+# org_members row where that same user has role=owner).
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - org_id
+        - user_id
+        - role
+        - created_at
+      filter:
+        organization:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
+
+insert_permissions:
+  - role: user
+    permission:
+      columns:
+        - org_id
+        - user_id
+        - role
+      check:
+        organization:
+          members:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _eq: owner
+
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - role
+      filter:
+        organization:
+          members:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _eq: owner
+      check: null
+
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        organization:
+          members:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _eq: owner

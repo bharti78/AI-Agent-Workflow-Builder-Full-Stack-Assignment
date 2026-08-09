@@ -1,0 +1,33 @@
+table:
+  schema: public
+  name: workflow_results
+
+object_relationships:
+  - name: workflow_run
+    using:
+      foreign_key_constraint_on: workflow_run_id
+  - name: workflow
+    using:
+      foreign_key_constraint_on: workflow_id
+
+# ---------------------------------------------------------------------------
+# No insert/update/delete for role "user" (section 11: db_write is a
+# controlled, backend-only operation — never arbitrary SQL and never a
+# direct client mutation). Only the workflow runner, executing as admin
+# inside a db_write step, writes here.
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - workflow_run_id
+        - workflow_id
+        - data
+        - created_at
+      filter:
+        workflow:
+          organization:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id

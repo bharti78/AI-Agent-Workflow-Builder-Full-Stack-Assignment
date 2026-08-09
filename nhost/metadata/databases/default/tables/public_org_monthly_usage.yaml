@@ -1,0 +1,29 @@
+table:
+  schema: public
+  name: org_monthly_usage
+
+# Hasura treats views as read-only tables by default (no PK, no writes).
+object_relationships:
+  - name: organization
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: organizations
+        column_mapping:
+          organization_id: id
+
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - organization_id
+        - usage_this_month
+        - quota_allowed
+        - remaining_quota
+        - period_start
+      filter:
+        organization:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
