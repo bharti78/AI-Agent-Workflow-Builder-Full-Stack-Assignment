@@ -1,0 +1,55 @@
+table:
+  schema: public
+  name: workflow_runs
+
+object_relationships:
+  - name: workflow
+    using:
+      foreign_key_constraint_on: workflow_id
+
+array_relationships:
+  - name: step_runs
+    using:
+      foreign_key_constraint_on:
+        column: workflow_run_id
+        table:
+          schema: public
+          name: step_runs
+  - name: results
+    using:
+      foreign_key_constraint_on:
+        column: workflow_run_id
+        table:
+          schema: public
+          name: workflow_results
+
+# ---------------------------------------------------------------------------
+# NO insert/update/delete permission for role "user" — intentional.
+#
+# Runs are only ever created/mutated by the `triggerWorkflowRun` and
+# `approveStep` Hasura Actions (Phases 7 & 10), which execute with the
+# admin secret server-side after their own explicit business-logic checks
+# (auth, org membership, role, quota, run/step state). This keeps a
+# second, independent authorization layer between "can view" and
+# "can cause state to change" — a user can never fabricate a workflow_run
+# row directly over GraphQL, no matter what role they hold.
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - workflow_id
+        - status
+        - triggered_by
+        - trigger_type
+        - started_at
+        - completed_at
+        - error
+        - created_at
+      filter:
+        workflow:
+          organization:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id

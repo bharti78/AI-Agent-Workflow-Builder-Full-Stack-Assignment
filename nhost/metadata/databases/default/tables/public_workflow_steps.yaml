@@ -1,0 +1,149 @@
+table:
+  schema: public
+  name: workflow_steps
+
+object_relationships:
+  - name: workflow
+    using:
+      foreign_key_constraint_on: workflow_id
+
+array_relationships:
+  - name: step_runs
+    using:
+      foreign_key_constraint_on:
+        column: workflow_step_id
+        table:
+          schema: public
+          name: step_runs
+
+# ---------------------------------------------------------------------------
+# LAYER 2 ENFORCEMENT (section 8):
+# "Only an owner can add: db_write, notify, webhook trigger."
+#
+# The check/filter below is a single boolean expression evaluated by
+# Hasura (i.e. the backend, not the browser) on every insert/update:
+#
+#   EITHER the step's type is NOT one of the privileged types
+#   OR     the acting user is an owner of the step's workflow's org
+#
+# This means even if the frontend hid the "db_write" option from an
+# editor, a hand-crafted GraphQL mutation from an editor session would
+# still be rejected here — satisfying "if the frontend hides the option
+# but the backend allows it, the implementation is considered insecure."
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - workflow_id
+        - step_order
+        - name
+        - type
+        - config
+        - created_at
+        - updated_at
+      filter:
+        workflow:
+          organization:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+
+insert_permissions:
+  - role: user
+    permission:
+      columns:
+        - workflow_id
+        - step_order
+        - name
+        - type
+        - config
+      check:
+        _and:
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _in: [owner, editor]
+          - _or:
+              - type:
+                  _nin: [db_write, notify]
+              - workflow:
+                  organization:
+                    members:
+                      _and:
+                        - user_id:
+                            _eq: X-Hasura-User-Id
+                        - role:
+                            _eq: owner
+
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - step_order
+        - name
+        - type
+        - config
+      filter:
+        _and:
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _in: [owner, editor]
+          - _or:
+              - type:
+                  _nin: [db_write, notify]
+              - workflow:
+                  organization:
+                    members:
+                      _and:
+                        - user_id:
+                            _eq: X-Hasura-User-Id
+                        - role:
+                            _eq: owner
+      check:
+        _or:
+          - type:
+              _nin: [db_write, notify]
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _eq: owner
+
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _and:
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _in: [owner, editor]
+          - _or:
+              - type:
+                  _nin: [db_write, notify]
+              - workflow:
+                  organization:
+                    members:
+                      _and:
+                        - user_id:
+                            _eq: X-Hasura-User-Id
+                        - role:
+                            _eq: owner

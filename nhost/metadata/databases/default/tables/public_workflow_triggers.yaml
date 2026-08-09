@@ -1,0 +1,120 @@
+table:
+  schema: public
+  name: workflow_triggers
+
+object_relationships:
+  - name: workflow
+    using:
+      foreign_key_constraint_on: workflow_id
+
+# ---------------------------------------------------------------------------
+# Same Layer-2 pattern as workflow_steps: "webhook trigger" is privileged
+# (sections 7 and 18 — "Only owners can configure webhook triggers"),
+# manual/scheduled/database_event triggers are not.
+#
+# Note: the webhook trigger's config JSONB holds a random token used to
+# look the workflow up from an unauthenticated POST (see the partial index
+# in the Phase 1 migration). That token is only ever readable by org
+# members via this select permission — never returned to unauthenticated
+# webhook callers.
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - workflow_id
+        - trigger_type
+        - config
+        - active
+        - created_at
+      filter:
+        workflow:
+          organization:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+
+insert_permissions:
+  - role: user
+    permission:
+      columns:
+        - workflow_id
+        - trigger_type
+        - config
+        - active
+      check:
+        _and:
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _in: [owner, editor]
+          - _or:
+              - trigger_type:
+                  _neq: webhook
+              - workflow:
+                  organization:
+                    members:
+                      _and:
+                        - user_id:
+                            _eq: X-Hasura-User-Id
+                        - role:
+                            _eq: owner
+
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - config
+        - active
+      filter:
+        _and:
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _in: [owner, editor]
+          - _or:
+              - trigger_type:
+                  _neq: webhook
+              - workflow:
+                  organization:
+                    members:
+                      _and:
+                        - user_id:
+                            _eq: X-Hasura-User-Id
+                        - role:
+                            _eq: owner
+      check: null
+
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _and:
+          - workflow:
+              organization:
+                members:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - role:
+                        _in: [owner, editor]
+          - _or:
+              - trigger_type:
+                  _neq: webhook
+              - workflow:
+                  organization:
+                    members:
+                      _and:
+                        - user_id:
+                            _eq: X-Hasura-User-Id
+                        - role:
+                            _eq: owner

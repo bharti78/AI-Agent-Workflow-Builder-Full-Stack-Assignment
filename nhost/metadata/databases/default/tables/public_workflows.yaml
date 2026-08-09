@@ -1,0 +1,114 @@
+table:
+  schema: public
+  name: workflows
+
+object_relationships:
+  - name: organization
+    using:
+      foreign_key_constraint_on: org_id
+
+# NOTE: no relationship to auth.users here — same reasoning as
+# public_org_members.yaml. created_by (raw UUID) below is preset
+# server-side on insert and is all any required permission/query needs.
+
+array_relationships:
+  - name: steps
+    using:
+      foreign_key_constraint_on:
+        column: workflow_id
+        table:
+          schema: public
+          name: workflow_steps
+  - name: triggers
+    using:
+      foreign_key_constraint_on:
+        column: workflow_id
+        table:
+          schema: public
+          name: workflow_triggers
+  - name: runs
+    using:
+      foreign_key_constraint_on:
+        column: workflow_id
+        table:
+          schema: public
+          name: workflow_runs
+
+# ---------------------------------------------------------------------------
+# Select: any member (owner/editor/viewer) of the workflow's org.
+# This is THE rule that makes cross-org ID guessing fail: if the row's
+# org_id has no org_members entry for X-Hasura-User-Id, the row simply
+# does not exist as far as this session is concerned — not a 403, a 404.
+#
+# Insert/Update: owner or editor of the org (section 7 — viewer cannot
+# create/edit workflows). created_by is preset server-side so it can never
+# be spoofed to impersonate another user.
+#
+# Delete: owner only (section 7 explicitly lists "delete workflows" under
+# Owner but not under Editor).
+# ---------------------------------------------------------------------------
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - org_id
+        - name
+        - description
+        - active
+        - created_by
+        - created_at
+        - updated_at
+      filter:
+        organization:
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
+
+insert_permissions:
+  - role: user
+    permission:
+      columns:
+        - org_id
+        - name
+        - description
+        - active
+      set:
+        created_by: x-hasura-User-Id
+      check:
+        organization:
+          members:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _in: [owner, editor]
+
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - description
+        - active
+      filter:
+        organization:
+          members:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _in: [owner, editor]
+      check: null
+
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        organization:
+          members:
+            _and:
+              - user_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _eq: owner
