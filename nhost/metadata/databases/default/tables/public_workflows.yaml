@@ -6,14 +6,10 @@ object_relationships:
   - name: organization
     using:
       foreign_key_constraint_on: org_id
-  - name: creator
-    using:
-      manual_configuration:
-        remote_table:
-          schema: auth
-          name: users
-        column_mapping:
-          created_by: id
+
+# NOTE: no relationship to auth.users here — same reasoning as
+# public_org_members.yaml. created_by (raw UUID) below is preset
+# server-side on insert and is all any required permission/query needs.
 
 array_relationships:
   - name: steps

@@ -6,15 +6,16 @@ object_relationships:
   - name: organization
     using:
       foreign_key_constraint_on: org_id
-  - name: user
-    using:
-      manual_configuration:
-        remote_table:
-          schema: auth
-          name: users
-        column_mapping:
-          user_id: id
 
+# NOTE: no relationship to auth.users here. Hasura requires a table to be
+# explicitly tracked before any relationship can point at it, and Nhost's
+# own default tracking of auth.users doesn't survive a full metadata
+# replace from this repo's files. user_id (the raw UUID) is still
+# selectable below — that's all any required query/permission needs. If a
+# future phase genuinely needs joined profile data (email, display name),
+# track auth.users explicitly in this repo with an org-scoped select
+# permission at that point, rather than resurrecting this relationship
+# untracked.
 # ---------------------------------------------------------------------------
 # Select: any member of the org can see the org's member/role list
 # (needed for the UI to show "who's on this team").
