@@ -30,14 +30,10 @@ export default function MembersPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await nhost.functions.fetch(
+      const { body } = await nhost.functions.fetch<{ members?: Member[]; error?: string }>(
         `/organizations/members?orgId=${encodeURIComponent(currentOrg.id)}`,
         { method: "GET" },
       );
-      const body = response.body as { members?: Member[]; error?: string };
-      if (!response.ok) {
-        throw new Error(body.error ?? "Could not load members");
-      }
       setMembers(body.members ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load members");
@@ -56,15 +52,11 @@ export default function MembersPage() {
     setInviteError(null);
     setIsInviting(true);
     try {
-      const response = await nhost.functions.fetch("/organizations/invite", {
+      await nhost.functions.fetch("/organizations/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orgId: currentOrg.id, email: inviteEmail, role: inviteRole }),
       });
-      const body = response.body as { error?: string };
-      if (!response.ok) {
-        throw new Error(body.error ?? "Could not invite member");
-      }
       setInviteEmail("");
       await loadMembers();
     } catch (err) {

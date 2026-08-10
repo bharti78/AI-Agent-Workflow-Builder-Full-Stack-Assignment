@@ -33,13 +33,9 @@ function MembersPage() {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$nhost$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["nhost"].functions.fetch(`/organizations/members?orgId=${encodeURIComponent(currentOrg.id)}`, {
+            const { body } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$nhost$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["nhost"].functions.fetch(`/organizations/members?orgId=${encodeURIComponent(currentOrg.id)}`, {
                 method: "GET"
             });
-            const body = response.body;
-            if (!response.ok) {
-                throw new Error(body.error ?? "Could not load members");
-            }
             setMembers(body.members ?? []);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Could not load members");
@@ -60,7 +56,7 @@ function MembersPage() {
         setInviteError(null);
         setIsInviting(true);
         try {
-            const response = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$nhost$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["nhost"].functions.fetch("/organizations/invite", {
+            await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$nhost$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["nhost"].functions.fetch("/organizations/invite", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -71,10 +67,6 @@ function MembersPage() {
                     role: inviteRole
                 })
             });
-            const body = response.body;
-            if (!response.ok) {
-                throw new Error(body.error ?? "Could not invite member");
-            }
             setInviteEmail("");
             await loadMembers();
         } catch (err) {
@@ -111,12 +103,12 @@ function MembersPage() {
                 children: "Loading..."
             }, void 0, false, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 97,
+                lineNumber: 89,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/organizations/members/page.tsx",
-            lineNumber: 96,
+            lineNumber: 88,
             columnNumber: 7
         }, this);
     }
@@ -132,19 +124,19 @@ function MembersPage() {
                         children: "Create one"
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/members/page.tsx",
-                        lineNumber: 106,
+                        lineNumber: 98,
                         columnNumber: 51
                     }, this),
                     "."
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 105,
+                lineNumber: 97,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/organizations/members/page.tsx",
-            lineNumber: 104,
+            lineNumber: 96,
             columnNumber: 7
         }, this);
     }
@@ -158,12 +150,12 @@ function MembersPage() {
                     children: "← Back"
                 }, void 0, false, {
                     fileName: "[project]/app/organizations/members/page.tsx",
-                    lineNumber: 117,
+                    lineNumber: 109,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 116,
+                lineNumber: 108,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -173,7 +165,7 @@ function MembersPage() {
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 119,
+                lineNumber: 111,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -181,7 +173,7 @@ function MembersPage() {
                 children: error
             }, void 0, false, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 120,
+                lineNumber: 112,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -205,7 +197,7 @@ function MembersPage() {
                                     children: "Member"
                                 }, void 0, false, {
                                     fileName: "[project]/app/organizations/members/page.tsx",
-                                    lineNumber: 125,
+                                    lineNumber: 117,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -215,7 +207,7 @@ function MembersPage() {
                                     children: "Role"
                                 }, void 0, false, {
                                     fileName: "[project]/app/organizations/members/page.tsx",
-                                    lineNumber: 126,
+                                    lineNumber: 118,
                                     columnNumber: 13
                                 }, this),
                                 isOwner && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -224,18 +216,18 @@ function MembersPage() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/organizations/members/page.tsx",
-                                    lineNumber: 127,
+                                    lineNumber: 119,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/organizations/members/page.tsx",
-                            lineNumber: 124,
+                            lineNumber: 116,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/members/page.tsx",
-                        lineNumber: 123,
+                        lineNumber: 115,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -251,7 +243,7 @@ function MembersPage() {
                                         children: m.displayName || m.email || m.userId
                                     }, void 0, false, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 133,
+                                        lineNumber: 125,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -267,7 +259,7 @@ function MembersPage() {
                                                     children: "owner"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/organizations/members/page.tsx",
-                                                    lineNumber: 142,
+                                                    lineNumber: 134,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -275,7 +267,7 @@ function MembersPage() {
                                                     children: "editor"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/organizations/members/page.tsx",
-                                                    lineNumber: 143,
+                                                    lineNumber: 135,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -283,18 +275,18 @@ function MembersPage() {
                                                     children: "viewer"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/organizations/members/page.tsx",
-                                                    lineNumber: 144,
+                                                    lineNumber: 136,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/organizations/members/page.tsx",
-                                            lineNumber: 138,
+                                            lineNumber: 130,
                                             columnNumber: 19
                                         }, this) : m.role
                                     }, void 0, false, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 136,
+                                        lineNumber: 128,
                                         columnNumber: 15
                                     }, this),
                                     isOwner && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -311,29 +303,29 @@ function MembersPage() {
                                             children: "Remove"
                                         }, void 0, false, {
                                             fileName: "[project]/app/organizations/members/page.tsx",
-                                            lineNumber: 152,
+                                            lineNumber: 144,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 143,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, m.id, true, {
                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                lineNumber: 132,
+                                lineNumber: 124,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/members/page.tsx",
-                        lineNumber: 130,
+                        lineNumber: 122,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 122,
+                lineNumber: 114,
                 columnNumber: 7
             }, this),
             isOwner && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -346,7 +338,7 @@ function MembersPage() {
                         children: "Invite a member"
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/members/page.tsx",
-                        lineNumber: 168,
+                        lineNumber: 160,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -354,7 +346,7 @@ function MembersPage() {
                         children: "They need an existing account (ask them to sign up first)."
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/members/page.tsx",
-                        lineNumber: 169,
+                        lineNumber: 161,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -368,7 +360,7 @@ function MembersPage() {
                                         children: "Email"
                                     }, void 0, false, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 174,
+                                        lineNumber: 166,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -379,13 +371,13 @@ function MembersPage() {
                                         onChange: (e)=>setInviteEmail(e.target.value)
                                     }, void 0, false, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 175,
+                                        lineNumber: 167,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                lineNumber: 173,
+                                lineNumber: 165,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -396,7 +388,7 @@ function MembersPage() {
                                         children: "Role"
                                     }, void 0, false, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 184,
+                                        lineNumber: 176,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -409,7 +401,7 @@ function MembersPage() {
                                                 children: "editor"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                                lineNumber: 190,
+                                                lineNumber: 182,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -417,19 +409,19 @@ function MembersPage() {
                                                 children: "viewer"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                                lineNumber: 191,
+                                                lineNumber: 183,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/organizations/members/page.tsx",
-                                        lineNumber: 185,
+                                        lineNumber: 177,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                lineNumber: 183,
+                                lineNumber: 175,
                                 columnNumber: 13
                             }, this),
                             inviteError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -437,7 +429,7 @@ function MembersPage() {
                                 children: inviteError
                             }, void 0, false, {
                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                lineNumber: 194,
+                                lineNumber: 186,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -446,25 +438,25 @@ function MembersPage() {
                                 children: isInviting ? "Inviting..." : "Invite"
                             }, void 0, false, {
                                 fileName: "[project]/app/organizations/members/page.tsx",
-                                lineNumber: 195,
+                                lineNumber: 187,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/organizations/members/page.tsx",
-                        lineNumber: 172,
+                        lineNumber: 164,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/organizations/members/page.tsx",
-                lineNumber: 167,
+                lineNumber: 159,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/organizations/members/page.tsx",
-        lineNumber: 115,
+        lineNumber: 107,
         columnNumber: 5
     }, this);
 }

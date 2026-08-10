@@ -18,17 +18,14 @@ export default function NewOrganizationPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await nhost.functions.fetch("/organizations/create", {
+      const { body } = await nhost.functions.fetch<{
+        organization?: { id: string };
+        error?: string;
+      }>("/organizations/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
-
-      const body = response.body as { organization?: { id: string }; error?: string };
-
-      if (!response.ok) {
-        throw new Error(body.error ?? "Could not create organization");
-      }
 
       await refetch();
       if (body.organization) {
