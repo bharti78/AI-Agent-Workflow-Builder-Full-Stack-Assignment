@@ -1,0 +1,11 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/organizations/members/page": "app/organizations/members/page.js",
+  "/organizations/new/page": "app/organizations/new/page.js",
+  "/page": "app/page.js",
+  "/sign-in/page": "app/sign-in/page.js",
+  "/sign-up/page": "app/sign-up/page.js",
+  "/workflows/[workflowId]/page": "app/workflows/[workflowId]/page.js",
+  "/workflows/page": "app/workflows/page.js"
+}
