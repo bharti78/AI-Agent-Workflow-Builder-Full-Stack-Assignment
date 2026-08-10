@@ -14,6 +14,10 @@ import jwt from "jsonwebtoken";
 //    org_members row-level rules — it does not use elevated admin
 //    privileges to skip the owner check, it just does the *lookup* as
 //    admin and lets Hasura's real permission system authorize the write.
+//
+// NOTE: $email is String! (not citext!) and the column is display_name
+// (not displayName) — both confirmed directly against the live schema via
+// Hasura Console's GraphiQL after the original guesses turned out wrong.
 // ---------------------------------------------------------------------------
 
 class HttpError extends Error {
@@ -89,11 +93,11 @@ const CHECK_OWNER_QUERY = `
 `;
 
 const FIND_USER_QUERY = `
-  query FindUserByEmail($email: citext!) {
+  query FindUserByEmail($email: String!) {
     auth_users(where: { email: { _eq: $email } }, limit: 1) {
       id
       email
-      displayName
+      display_name
     }
   }
 `;
@@ -150,7 +154,7 @@ export default async function handler(req: Request, res: Response) {
     }
 
     const found = await adminGraphql<{
-      auth_users: { id: string; email: string; displayName: string }[];
+      auth_users: { id: string; email: string; display_name: string | null }[];
     }>(FIND_USER_QUERY, { email });
 
     if (found.auth_users.length === 0) {
