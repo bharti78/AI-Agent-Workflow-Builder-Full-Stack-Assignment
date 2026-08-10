@@ -16,10 +16,9 @@ The backend is already deployed on Nhost Cloud since Phase 1. To verify:
 
 ### Required Nhost Secrets
 
-Set these in Nhost Dashboard → Settings → Secrets:
-
-- `LLM_API_KEY`: API key for your LLM provider (Groq, OpenRouter, or Gemini)
-- `LLM_MODEL`: Model identifier (e.g., `llama3-70b-8192`, `gemini-1.5-flash`)
+Set these in **Nhost Secrets (Dashboard → Settings → Secrets)**:
+- `LLM_API_KEY`: Your Groq API key (get from https://console.groq.com/keys)
+- `LLM_MODEL`: Groq model identifier (default: `llama-3.1-8b-instant`)
 
 ## Frontend (Vercel)
 

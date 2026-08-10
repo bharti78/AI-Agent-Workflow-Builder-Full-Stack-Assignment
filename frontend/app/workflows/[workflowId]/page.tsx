@@ -75,7 +75,7 @@ function getStatusBadge(status: string) {
 function defaultStepConfig(type: StepType): Record<string, unknown> {
   switch (type) {
     case "llm_call":
-      return { provider: "gemini", model: "", prompt: "", temperature: 0.2 };
+      return { provider: "groq", model: "llama-3.1-8b-instant", prompt: "", temperature: 0.2 };
     case "http_request":
       return { method: "GET", url: "", headers: {}, body: null };
     case "db_write":

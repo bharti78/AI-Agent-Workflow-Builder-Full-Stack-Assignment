@@ -54,7 +54,7 @@ graph TB
 - **Backend**: Nhost Cloud (Auth + Hasura + PostgreSQL + Functions)
 - **GraphQL**: Hasura with custom Actions
 - **Real-time**: GraphQL subscriptions via graphql-ws
-- **LLM Integration**: Groq, OpenRouter, Gemini (configurable)
+- **LLM Integration**: Groq (default model: llama-3.1-8b-instant)
 
 ## Setup Instructions
 
@@ -86,8 +86,8 @@ NEXT_PUBLIC_NHOST_REGION=your-region
 ```
 
 **Nhost Secrets (Dashboard → Settings → Secrets)**:
-- `LLM_API_KEY`: Your LLM provider API key
-- `LLM_MODEL`: Model identifier (e.g., `llama3-70b-8192`)
+- `LLM_API_KEY`: Your Groq API key (get from https://console.groq.com/keys)
+- `LLM_MODEL`: Groq model identifier (default: `llama-3.1-8b-instant`)
 
 ### 5. Deploy Nhost Functions
 
