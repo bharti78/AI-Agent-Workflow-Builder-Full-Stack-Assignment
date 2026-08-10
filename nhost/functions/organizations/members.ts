@@ -100,7 +100,7 @@ const LIST_MEMBERS_QUERY = `
 
 const USERS_BY_ID_QUERY = `
   query UsersById($ids: [uuid!]!) {
-    users(where: { id: { _in: $ids } }) {
+    auth_users(where: { id: { _in: $ids } }) {
       id
       email
       displayName
@@ -143,11 +143,11 @@ export default async function handler(req: Request, res: Response) {
     const users =
       ids.length > 0
         ? await adminGraphql<{
-            users: { id: string; email: string; displayName: string }[];
+            auth_users: { id: string; email: string; displayName: string }[];
           }>(USERS_BY_ID_QUERY, { ids })
-        : { users: [] };
+        : { auth_users: [] };
 
-    const usersById = new Map(users.users.map((u) => [u.id, u]));
+    const usersById = new Map(users.auth_users.map((u) => [u.id, u]));
 
     const enriched = members.org_members.map((m) => ({
       id: m.id,
@@ -164,11 +164,6 @@ export default async function handler(req: Request, res: Response) {
       return res.status(err.status).json({ error: err.message });
     }
     console.error("organizations/members failed:", err);
-    // TEMPORARY DEBUG: exposing the real error to diagnose the 500.
-    // Revert this to the generic message before considering this done.
-    return res.status(500).json({
-      error: "Could not list members",
-      debug: err instanceof Error ? err.message : String(err),
-    });
+    return res.status(500).json({ error: "Could not list members" });
   }
 }
