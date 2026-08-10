@@ -89,11 +89,11 @@ const CHECK_OWNER_QUERY = `
 `;
 
 const FIND_USER_QUERY = `
-  query FindUserByEmail($email: citext!) {
-    users(where: { email: { _eq: $email } }, limit: 1) {
+  query FindUserByEmail($email: String!) {
+    auth_users(where: { email: { _eq: $email } }, limit: 1) {
       id
       email
-      displayName
+      display_name
     }
   }
 `;
@@ -150,17 +150,17 @@ export default async function handler(req: Request, res: Response) {
     }
 
     const found = await adminGraphql<{
-      users: { id: string; email: string; displayName: string }[];
+      auth_users: { id: string; email: string; display_name: string | null }[];
     }>(FIND_USER_QUERY, { email });
 
-    if (found.users.length === 0) {
+    if (found.auth_users.length === 0) {
       throw new HttpError(
         404,
         "No account found for that email. Ask them to sign up first, then invite again.",
       );
     }
 
-    const targetUserId = found.users[0].id;
+    const targetUserId = found.auth_users[0].id;
 
     await adminGraphql(INSERT_MEMBER_MUTATION, {
       orgId,
@@ -169,7 +169,7 @@ export default async function handler(req: Request, res: Response) {
     });
 
     return res.status(201).json({
-      member: { userId: targetUserId, email: found.users[0].email, role },
+      member: { userId: targetUserId, email: found.auth_users[0].email, role },
     });
   } catch (err) {
     if (err instanceof HttpError) {

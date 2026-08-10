@@ -103,7 +103,7 @@ const USERS_BY_ID_QUERY = `
     auth_users(where: { id: { _in: $ids } }) {
       id
       email
-      displayName
+      display_name
     }
   }
 `;
@@ -143,7 +143,7 @@ export default async function handler(req: Request, res: Response) {
     const users =
       ids.length > 0
         ? await adminGraphql<{
-            auth_users: { id: string; email: string; displayName: string }[];
+            auth_users: { id: string; email: string; display_name: string | null }[];
           }>(USERS_BY_ID_QUERY, { ids })
         : { auth_users: [] };
 
@@ -155,7 +155,7 @@ export default async function handler(req: Request, res: Response) {
       role: m.role,
       createdAt: m.created_at,
       email: usersById.get(m.user_id)?.email ?? null,
-      displayName: usersById.get(m.user_id)?.displayName ?? null,
+      displayName: usersById.get(m.user_id)?.display_name ?? null,
     }));
 
     return res.status(200).json({ members: enriched });
