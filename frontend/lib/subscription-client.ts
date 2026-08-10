@@ -8,7 +8,7 @@ export function getSubscriptionClient() {
 
   const subdomain = process.env.NEXT_PUBLIC_NHOST_SUBDOMAIN ?? "";
   const region = process.env.NEXT_PUBLIC_NHOST_REGION ?? "";
-  const wsUrl = `wss://${subdomain}.functions.${region}.nhost.run/v1/graphql`;
+  const wsUrl = `wss://${subdomain}.graphql.${region}.nhost.run/v1/graphql`;
 
   wsClient = createWSClient({
     url: wsUrl,
