@@ -82,6 +82,8 @@ export function OrgProvider({ children }: { children: ReactNode }) {
       if (nextId && typeof window !== "undefined") {
         window.localStorage.setItem(STORAGE_KEY, nextId);
       }
+    } catch (err) {
+      console.error("Could not load organizations:", err);
     } finally {
       setIsLoading(false);
     }
