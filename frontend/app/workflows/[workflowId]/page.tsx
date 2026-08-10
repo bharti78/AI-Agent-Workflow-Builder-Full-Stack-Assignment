@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { nhost } from "@/lib/nhost";
 import { useOrg } from "@/lib/org-context";
@@ -253,8 +253,11 @@ function StepConfigFields({
   );
 }
 
-export default function WorkflowBuilderPage({ params }: { params: { workflowId: string } }) {
+export default function WorkflowBuilderPage() {
   const router = useRouter();
+  const routeParams = useParams<{ workflowId: string }>();
+  const workflowId = routeParams.workflowId;
+
   const { currentOrg, isLoading: orgLoading } = useOrg();
   const [workflow, setWorkflow] = useState<WorkflowDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -295,7 +298,7 @@ export default function WorkflowBuilderPage({ params }: { params: { workflowId: 
     try {
       const response = await nhost.graphql.request<{ workflows_by_pk: WorkflowDetail | null }>({
         query: WORKFLOW_DETAIL_QUERY,
-        variables: { workflowId: params.workflowId },
+        variables: { workflowId },
       });
       const row = response.body.data?.workflows_by_pk as WorkflowDetail | null;
       if (!row || row.org_id !== currentOrg.id) {
@@ -314,7 +317,7 @@ export default function WorkflowBuilderPage({ params }: { params: { workflowId: 
     } finally {
       setIsLoading(false);
     }
-  }, [currentOrg, params.workflowId]);
+  }, [currentOrg, workflowId]);
 
   useEffect(() => {
     loadWorkflow();
