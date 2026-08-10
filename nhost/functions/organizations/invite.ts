@@ -15,9 +15,8 @@ import jwt from "jsonwebtoken";
 //    privileges to skip the owner check, it just does the *lookup* as
 //    admin and lets Hasura's real permission system authorize the write.
 //
-// NOTE: $email is String! (not citext!) and the column is display_name
-// (not displayName) — both confirmed directly against the live schema via
-// Hasura Console's GraphiQL after the original guesses turned out wrong.
+// NOTE: $email is citext! and the column is display_name
+// (not displayName), matching the deployed Nhost auth.users schema.
 // ---------------------------------------------------------------------------
 
 class HttpError extends Error {
@@ -93,7 +92,7 @@ const CHECK_OWNER_QUERY = `
 `;
 
 const FIND_USER_QUERY = `
-  query FindUserByEmail($email: String!) {
+  query FindUserByEmail($email: citext!) {
     auth_users(where: { email: { _eq: $email } }, limit: 1) {
       id
       email
