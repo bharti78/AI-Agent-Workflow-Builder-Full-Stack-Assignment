@@ -30,7 +30,7 @@ function NewOrganizationPage() {
         setError(null);
         setIsSubmitting(true);
         try {
-            const response = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$nhost$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["nhost"].functions.fetch("/organizations/create", {
+            const { body } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$nhost$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["nhost"].functions.fetch("/organizations/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -39,10 +39,6 @@ function NewOrganizationPage() {
                     name
                 })
             });
-            const body = response.body;
-            if (!response.ok) {
-                throw new Error(body.error ?? "Could not create organization");
-            }
             await refetch();
             if (body.organization) {
                 setCurrentOrgId(body.organization.id);
@@ -61,7 +57,7 @@ function NewOrganizationPage() {
                 children: "Create an organization"
             }, void 0, false, {
                 fileName: "[project]/app/organizations/new/page.tsx",
-                lineNumber: 47,
+                lineNumber: 44,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -69,7 +65,7 @@ function NewOrganizationPage() {
                 children: "You'll be its first owner, with full access to manage members, workflows, and triggers."
             }, void 0, false, {
                 fileName: "[project]/app/organizations/new/page.tsx",
-                lineNumber: 48,
+                lineNumber: 45,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -83,7 +79,7 @@ function NewOrganizationPage() {
                                 children: "Organization name"
                             }, void 0, false, {
                                 fileName: "[project]/app/organizations/new/page.tsx",
-                                lineNumber: 54,
+                                lineNumber: 51,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -96,13 +92,13 @@ function NewOrganizationPage() {
                                 autoFocus: true
                             }, void 0, false, {
                                 fileName: "[project]/app/organizations/new/page.tsx",
-                                lineNumber: 55,
+                                lineNumber: 52,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/organizations/new/page.tsx",
-                        lineNumber: 53,
+                        lineNumber: 50,
                         columnNumber: 9
                     }, this),
                     error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -110,7 +106,7 @@ function NewOrganizationPage() {
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/new/page.tsx",
-                        lineNumber: 65,
+                        lineNumber: 62,
                         columnNumber: 19
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -119,19 +115,19 @@ function NewOrganizationPage() {
                         children: isSubmitting ? "Creating..." : "Create organization"
                     }, void 0, false, {
                         fileName: "[project]/app/organizations/new/page.tsx",
-                        lineNumber: 66,
+                        lineNumber: 63,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/organizations/new/page.tsx",
-                lineNumber: 52,
+                lineNumber: 49,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/organizations/new/page.tsx",
-        lineNumber: 46,
+        lineNumber: 43,
         columnNumber: 5
     }, this);
 }

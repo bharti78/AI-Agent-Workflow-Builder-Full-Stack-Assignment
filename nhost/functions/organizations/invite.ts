@@ -89,11 +89,11 @@ const CHECK_OWNER_QUERY = `
 `;
 
 const FIND_USER_QUERY = `
-  query FindUserByEmail($email: String!) {
+  query FindUserByEmail($email: citext!) {
     auth_users(where: { email: { _eq: $email } }, limit: 1) {
       id
       email
-      display_name
+      displayName
     }
   }
 `;
@@ -150,7 +150,7 @@ export default async function handler(req: Request, res: Response) {
     }
 
     const found = await adminGraphql<{
-      auth_users: { id: string; email: string; display_name: string | null }[];
+      auth_users: { id: string; email: string; displayName: string }[];
     }>(FIND_USER_QUERY, { email });
 
     if (found.auth_users.length === 0) {
