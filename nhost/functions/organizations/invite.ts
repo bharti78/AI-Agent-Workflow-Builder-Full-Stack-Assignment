@@ -182,9 +182,6 @@ export default async function handler(req: Request, res: Response) {
     if (err instanceof Error && err.message.includes("Uniqueness violation")) {
       return res.status(409).json({ error: "That person is already a member of this organization" });
     }
-    return res.status(500).json({
-      error: "Could not invite member",
-      debug: err instanceof Error ? err.message : String(err),
-    });
+    return res.status(500).json({ error: "Could not invite member" });
   }
 }

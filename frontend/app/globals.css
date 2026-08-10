@@ -30,6 +30,30 @@ a {
   padding: 48px 24px;
 }
 
+.page-wide {
+  max-width: 960px;
+}
+
+.page-heading,
+.row-between,
+.button-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button-row {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .card {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -50,16 +74,32 @@ a {
   color: var(--text-muted);
 }
 
-.field input {
+.field input,
+.field select,
+.field textarea {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 15px;
+  font: inherit;
 }
 
-.field input:focus-visible {
+.field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.inline-fields {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 button {
@@ -86,6 +126,39 @@ button:disabled {
 button.secondary {
   background: #fff;
   color: var(--accent);
+}
+
+button.compact {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+button.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+button.plain-row {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
 }
 
 .error-text {

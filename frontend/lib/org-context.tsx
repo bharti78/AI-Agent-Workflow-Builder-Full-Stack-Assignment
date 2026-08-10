@@ -56,7 +56,7 @@ export function OrgProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      const response = await nhost.graphql.request({
+      const response = await nhost.graphql.request<{ organizations: OrganizationRow[] }>({
         query: MY_ORGANIZATIONS_QUERY,
         variables: { userId: user.id },
       });

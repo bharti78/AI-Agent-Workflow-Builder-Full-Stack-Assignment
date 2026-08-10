@@ -49,7 +49,7 @@ export default function HomePage() {
             Signed in as <strong>{user?.email}</strong>
           </p>
         </div>
-        <button className="secondary" onClick={() => nhost.auth.signOut()}>
+        <button className="secondary" onClick={() => nhost.auth.signOut({ all: false })}>
           Sign out
         </button>
       </div>
@@ -90,12 +90,13 @@ export default function HomePage() {
           )}
 
           <p>
+            <Link href="/workflows">Workflows</Link> ·{" "}
             <Link href="/organizations/members">Manage members</Link> ·{" "}
             <Link href="/organizations/new">New organization</Link>
           </p>
 
           <p className="muted" style={{ marginTop: 16 }}>
-            Workflows will show up here starting Phase 5.
+            Build and manage workflow definitions from the Workflows page.
           </p>
         </div>
       )}
