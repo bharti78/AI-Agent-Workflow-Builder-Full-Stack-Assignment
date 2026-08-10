@@ -6,6 +6,7 @@ actions:
       forward_client_headers: true
     permissions:
       - role: user
+
 custom_types:
   enums: []
   input_objects: []
