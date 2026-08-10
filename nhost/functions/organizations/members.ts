@@ -164,6 +164,11 @@ export default async function handler(req: Request, res: Response) {
       return res.status(err.status).json({ error: err.message });
     }
     console.error("organizations/members failed:", err);
-    return res.status(500).json({ error: "Could not list members" });
+    // TEMPORARY DEBUG: exposing the real error to diagnose the 500.
+    // Revert this to the generic message before considering this done.
+    return res.status(500).json({
+      error: "Could not list members",
+      debug: err instanceof Error ? err.message : String(err),
+    });
   }
 }
