@@ -12,6 +12,7 @@ import {
   DELETE_TRIGGER_MUTATION,
   DELETE_WORKFLOW_MUTATION,
   REORDER_STEPS_MUTATION,
+  TRIGGER_WORKFLOW_RUN_MUTATION,
   UPDATE_STEP_MUTATION,
   UPDATE_TRIGGER_MUTATION,
   UPDATE_WORKFLOW_MUTATION,
@@ -261,7 +262,9 @@ export default function WorkflowBuilderPage() {
   const { currentOrg, isLoading: orgLoading } = useOrg();
   const [workflow, setWorkflow] = useState<WorkflowDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [runMessage, setRunMessage] = useState<string | null>(null);
 
   const [workflowName, setWorkflowName] = useState("");
   const [workflowDescription, setWorkflowDescription] = useState("");
@@ -387,6 +390,28 @@ export default function WorkflowBuilderPage() {
       router.push("/workflows");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not delete workflow");
+    }
+  }
+
+  async function runWorkflow() {
+    if (!workflow || !editable) return;
+    setIsRunning(true);
+    setError(null);
+    setRunMessage(null);
+    try {
+      const response = await nhost.graphql.request<{
+        triggerWorkflowRun: { run_id: string; status: string };
+      }>({
+        query: TRIGGER_WORKFLOW_RUN_MUTATION,
+        variables: { workflowId: workflow.id },
+      });
+      const result = response.body.data?.triggerWorkflowRun;
+      setRunMessage(result ? `Run ${result.status}: ${result.run_id}` : "Workflow run triggered");
+      await loadWorkflow();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not run workflow");
+    } finally {
+      setIsRunning(false);
     }
   }
 
@@ -570,8 +595,8 @@ export default function WorkflowBuilderPage() {
                   Delete workflow
                 </button>
               )}
-              <button type="button" disabled title="Workflow execution coming in a later phase">
-                Run
+              <button type="button" onClick={runWorkflow} disabled={isRunning || workflow.steps.length === 0}>
+                {isRunning ? "Running..." : "Run"}
               </button>
             </div>
           </form>
@@ -583,6 +608,43 @@ export default function WorkflowBuilderPage() {
           </>
         )}
       </div>
+
+      {runMessage && <p className="muted">{runMessage}</p>}
+
+      {workflow.runs[0] && (
+        <div className="card" style={{ marginBottom: 24 }}>
+          <div className="row-between">
+            <strong>Latest run</strong>
+            <span>{workflow.runs[0].status}</span>
+          </div>
+          {workflow.runs[0].error && <p className="error-text">{workflow.runs[0].error}</p>}
+          {workflow.runs[0].step_runs && workflow.runs[0].step_runs.length > 0 ? (
+            <table className="data-table" style={{ marginTop: 12 }}>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Status</th>
+                  <th>Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                {workflow.runs[0].step_runs.map((stepRun) => {
+                  const step = workflow.steps.find((candidate) => candidate.id === stepRun.workflow_step_id);
+                  return (
+                    <tr key={stepRun.id}>
+                      <td>{step ? `${step.step_order}. ${step.name}` : stepRun.workflow_step_id}</td>
+                      <td>{stepRun.status}</td>
+                      <td>{stepRun.error ?? ""}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p className="muted">No step runs recorded yet.</p>
+          )}
+        </div>
+      )}
 
       <section style={{ marginBottom: 24 }}>
         <h2>Steps</h2>

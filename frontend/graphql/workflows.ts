@@ -63,6 +63,15 @@ export const WORKFLOW_DETAIL_QUERY = `
         status
         started_at
         completed_at
+        error
+        step_runs(order_by: { created_at: asc }) {
+          id
+          workflow_step_id
+          status
+          error
+          output
+          created_at
+        }
       }
     }
   }
@@ -188,6 +197,15 @@ export const DELETE_TRIGGER_MUTATION = `
   }
 `;
 
+export const TRIGGER_WORKFLOW_RUN_MUTATION = `
+  mutation TriggerWorkflowRun($workflowId: uuid!) {
+    triggerWorkflowRun(workflow_id: $workflowId) {
+      run_id
+      status
+    }
+  }
+`;
+
 export type OrgRole = "owner" | "editor" | "viewer";
 export type StepType =
   | "llm_call"
@@ -208,7 +226,25 @@ export interface WorkflowListRow {
   updated_at: string;
   steps: { id: string; name: string; type: StepType; step_order: number }[];
   triggers: { id: string; trigger_type: TriggerType; active: boolean }[];
-  runs: { id: string; status: string; started_at: string | null; completed_at: string | null }[];
+  runs: WorkflowRunSummary[];
+}
+
+export interface StepRunSummary {
+  id: string;
+  workflow_step_id: string;
+  status: "pending" | "running" | "completed" | "failed" | "paused" | "skipped";
+  error: string | null;
+  output: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface WorkflowRunSummary {
+  id: string;
+  status: "pending" | "running" | "paused" | "completed" | "failed";
+  started_at: string | null;
+  completed_at: string | null;
+  error?: string | null;
+  step_runs?: StepRunSummary[];
 }
 
 export interface WorkflowStep {
