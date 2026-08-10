@@ -1,0 +1,16 @@
+table:
+  schema: auth
+  name: users
+
+# Intentionally NO select_permissions (or any other permissions) block.
+# Tracking a table and granting a role access to it are two separate
+# things in Hasura: this makes auth.users queryable by the admin role
+# (which is what nhost/functions/organizations/members.ts and invite.ts
+# use, server-side, with NHOST_ADMIN_SECRET) without granting role "user"
+# — i.e. the browser's own session — any access to it at all. This is
+# the fix for the "table auth.users is not tracked" issue from Phase 2:
+# that error meant the table had been fully untracked by our metadata
+# replace, not just the relationships we removed. Those functions need
+# direct tracked access to look up email/displayName server-side; the
+# public GraphQL API (role "user") still can't see this table, exactly
+# as decided in Phase 2.
