@@ -5,19 +5,23 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { nhost } from "@/lib/nhost";
 import { useOrg } from "@/lib/org-context";
+import { getSubscriptionClient } from "@/lib/subscription-client";
 import {
+  APPROVE_STEP_MUTATION,
   CREATE_STEP_MUTATION,
   CREATE_TRIGGER_MUTATION,
   DELETE_STEP_MUTATION,
   DELETE_TRIGGER_MUTATION,
   DELETE_WORKFLOW_MUTATION,
   REORDER_STEPS_MUTATION,
+  STEP_RUN_UPDATES_SUBSCRIPTION,
   TRIGGER_WORKFLOW_RUN_MUTATION,
   UPDATE_STEP_MUTATION,
   UPDATE_TRIGGER_MUTATION,
   UPDATE_WORKFLOW_MUTATION,
   WORKFLOW_DETAIL_QUERY,
   type StepType,
+  type StepRunSummary,
   type TriggerType,
   type WorkflowDetail,
   type WorkflowStep,
@@ -45,6 +49,27 @@ function canManageStep(role: string | undefined, type: StepType) {
 
 function canManageTrigger(role: string | undefined, triggerType: TriggerType) {
   return canEdit(role) && (triggerType !== "webhook" || role === "owner");
+}
+
+function canApprove(role: string | undefined) {
+  return role === "owner" || role === "editor";
+}
+
+function getStatusBadge(status: string) {
+  switch (status) {
+    case "completed":
+      return "✓ Completed";
+    case "running":
+      return "⏳ Running";
+    case "paused":
+      return "⏸ Waiting for approval";
+    case "failed":
+      return "✗ Failed";
+    case "skipped":
+      return "⊘ Skipped";
+    default:
+      return status;
+  }
 }
 
 function defaultStepConfig(type: StepType): Record<string, unknown> {
@@ -265,6 +290,7 @@ export default function WorkflowBuilderPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runMessage, setRunMessage] = useState<string | null>(null);
+  const [liveStepRuns, setLiveStepRuns] = useState<StepRunSummary[] | null>(null);
 
   const [workflowName, setWorkflowName] = useState("");
   const [workflowDescription, setWorkflowDescription] = useState("");
@@ -325,6 +351,41 @@ export default function WorkflowBuilderPage() {
   useEffect(() => {
     loadWorkflow();
   }, [loadWorkflow]);
+
+  // Subscribe to live step_run updates when there's a workflow run
+  useEffect(() => {
+    if (!workflow?.runs[0]) {
+      setLiveStepRuns(null);
+      return;
+    }
+
+    const runId = workflow.runs[0].id;
+    const wsClient = getSubscriptionClient();
+
+    const unsubscribe = wsClient.subscribe(
+      {
+        query: STEP_RUN_UPDATES_SUBSCRIPTION,
+        variables: { workflowRunId: runId },
+      },
+      {
+        next: (data: any) => {
+          if (data.data?.step_runs) {
+            setLiveStepRuns(data.data.step_runs);
+          }
+        },
+        error: (err) => {
+          console.error("Subscription error:", err);
+        },
+        complete: () => {
+          console.log("Subscription complete");
+        },
+      },
+    ) as () => void;
+
+    return () => {
+      unsubscribe();
+    };
+  }, [workflow?.runs]);
 
   function openStep(step: WorkflowStep) {
     setExpandedStepId(expandedStepId === step.id ? null : step.id);
@@ -533,6 +594,19 @@ export default function WorkflowBuilderPage() {
     }
   }
 
+  async function approveStepRun(stepRunId: string) {
+    if (!canApprove(currentOrg?.myRole)) return;
+    try {
+      await nhost.graphql.request({
+        query: APPROVE_STEP_MUTATION,
+        variables: { stepRunId },
+      });
+      await loadWorkflow();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not approve step");
+    }
+  }
+
   if (orgLoading || isLoading) {
     return (
       <main className="page">
@@ -595,7 +669,7 @@ export default function WorkflowBuilderPage() {
                   Delete workflow
                 </button>
               )}
-              <button type="button" onClick={runWorkflow} disabled={isRunning || workflow.steps.length === 0}>
+              <button type="button" onClick={runWorkflow} disabled={isRunning || workflow.steps.length === 0 || !editable}>
                 {isRunning ? "Running..." : "Run"}
               </button>
             </div>
@@ -618,23 +692,41 @@ export default function WorkflowBuilderPage() {
             <span>{workflow.runs[0].status}</span>
           </div>
           {workflow.runs[0].error && <p className="error-text">{workflow.runs[0].error}</p>}
-          {workflow.runs[0].step_runs && workflow.runs[0].step_runs.length > 0 ? (
+          {(liveStepRuns || workflow.runs[0].step_runs) && (liveStepRuns || workflow.runs[0].step_runs)!.length > 0 ? (
             <table className="data-table" style={{ marginTop: 12 }}>
               <thead>
                 <tr>
                   <th>Step</th>
                   <th>Status</th>
                   <th>Error</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {workflow.runs[0].step_runs.map((stepRun) => {
+                {(liveStepRuns || workflow.runs[0].step_runs)!.map((stepRun) => {
                   const step = workflow.steps.find((candidate) => candidate.id === stepRun.workflow_step_id);
+                  const isPaused = stepRun.status === "paused";
+                  const canApproveThis = isPaused && canApprove(currentOrg?.myRole);
                   return (
                     <tr key={stepRun.id}>
                       <td>{step ? `${step.step_order}. ${step.name}` : stepRun.workflow_step_id}</td>
-                      <td>{stepRun.status}</td>
+                      <td>{getStatusBadge(stepRun.status)}</td>
                       <td>{stepRun.error ?? ""}</td>
+                      <td>
+                        {isPaused ? (
+                          canApproveThis ? (
+                            <button
+                              type="button"
+                              onClick={() => approveStepRun(stepRun.id)}
+                              style={{ fontSize: "0.85rem", padding: "4px 8px" }}
+                            >
+                              Approve
+                            </button>
+                          ) : (
+                            <span className="muted">Waiting for approval</span>
+                          )
+                        ) : null}
+                      </td>
                     </tr>
                   );
                 })}

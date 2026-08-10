@@ -1,4 +1,11 @@
 actions:
+  - name: approveStep
+    definition:
+      kind: synchronous
+      handler: https://rlixouktdanijepxxoqm.functions.ap-south-1.nhost.run/v1/actions/approve-step
+      forward_client_headers: true
+    permissions:
+      - role: user
   - name: triggerWorkflowRun
     definition:
       kind: synchronous
@@ -6,12 +13,33 @@ actions:
       forward_client_headers: true
     permissions:
       - role: user
+  - name: triggerWorkflowWebhook
+    definition:
+      kind: synchronous
+      handler: https://rlixouktdanijepxxoqm.functions.ap-south-1.nhost.run/v1/actions/trigger-workflow-webhook
+      forward_client_headers: false
+    permissions:
+      - role: user
 
 custom_types:
   enums: []
   input_objects: []
   objects:
+    - name: ApproveStepOutput
+      fields:
+        - name: run_id
+          type: uuid!
+        - name: step_run_id
+          type: uuid!
+        - name: status
+          type: String!
     - name: TriggerWorkflowRunOutput
+      fields:
+        - name: run_id
+          type: uuid!
+        - name: status
+          type: String!
+    - name: TriggerWorkflowWebhookOutput
       fields:
         - name: run_id
           type: uuid!

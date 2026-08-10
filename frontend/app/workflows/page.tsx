@@ -127,6 +127,10 @@ export default function WorkflowsPage() {
             {currentOrg.name} &middot; your role: {currentOrg.myRole}
           </p>
         </div>
+        <div className="muted">
+          Usage: {currentOrg.quotaUsed} / {currentOrg.quotaAllowed} · Remaining:{" "}
+          {Math.max(currentOrg.quotaAllowed - currentOrg.quotaUsed, 0)}
+        </div>
       </div>
 
       {error && <p className="error-text">{error}</p>}

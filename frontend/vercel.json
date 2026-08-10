@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_NHOST_SUBDOMAIN": {
+      "description": "Nhost project subdomain (e.g., 'abcxyz' from abcxyz.ap-south-1.nhost.run)"
+    },
+    "NEXT_PUBLIC_NHOST_REGION": {
+      "description": "Nhost region (e.g., 'ap-south-1')"
+    }
+  }
+}

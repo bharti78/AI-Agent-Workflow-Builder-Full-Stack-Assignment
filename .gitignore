@@ -1,4 +1,4 @@
 .env
 frontend/.next/
 frontend/tsconfig.tsbuildinfo
- 
+nhost/node_modules

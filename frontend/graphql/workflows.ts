@@ -70,6 +70,12 @@ export const WORKFLOW_DETAIL_QUERY = `
           status
           error
           output
+          input
+          attempt_count
+          approved_by
+          approved_at
+          started_at
+          completed_at
           created_at
         }
       }
@@ -206,6 +212,38 @@ export const TRIGGER_WORKFLOW_RUN_MUTATION = `
   }
 `;
 
+export const APPROVE_STEP_MUTATION = `
+  mutation ApproveStep($stepRunId: uuid!) {
+    approveStep(step_run_id: $stepRunId) {
+      run_id
+      step_run_id
+      status
+    }
+  }
+`;
+
+export const STEP_RUN_UPDATES_SUBSCRIPTION = `
+  subscription StepRunUpdates($workflowRunId: uuid!) {
+    step_runs(
+      where: { workflow_run_id: { _eq: $workflowRunId } }
+      order_by: { created_at: asc }
+    ) {
+      id
+      workflow_step_id
+      status
+      input
+      output
+      error
+      attempt_count
+      approved_by
+      approved_at
+      started_at
+      completed_at
+      created_at
+    }
+  }
+`;
+
 export type OrgRole = "owner" | "editor" | "viewer";
 export type StepType =
   | "llm_call"
@@ -235,6 +273,12 @@ export interface StepRunSummary {
   status: "pending" | "running" | "completed" | "failed" | "paused" | "skipped";
   error: string | null;
   output: Record<string, unknown> | null;
+  input: Record<string, unknown> | null;
+  attempt_count: number;
+  approved_by: string | null;
+  approved_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
   created_at: string;
 }
 
