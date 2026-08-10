@@ -204,6 +204,8 @@ function OrgProvider({ children }) {
                 if (nextId && ("TURBOPACK compile-time value", "object") !== "undefined") {
                     window.localStorage.setItem(STORAGE_KEY, nextId);
                 }
+            } catch (err) {
+                console.error("Could not load organizations:", err);
             } finally{
                 setIsLoading(false);
             }
@@ -248,7 +250,7 @@ function OrgProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/lib/org-context.tsx",
-        lineNumber: 115,
+        lineNumber: 117,
         columnNumber: 10
     }, this);
 }

@@ -1,3 +1,6 @@
 {
-  "/organizations/members/page": "app/organizations/members/page.js"
+  "/organizations/members/page": "app/organizations/members/page.js",
+  "/page": "app/page.js",
+  "/workflows/[workflowId]/page": "app/workflows/[workflowId]/page.js",
+  "/workflows/page": "app/workflows/page.js"
 }

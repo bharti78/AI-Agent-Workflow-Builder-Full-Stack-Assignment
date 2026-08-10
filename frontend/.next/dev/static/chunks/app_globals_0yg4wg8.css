@@ -32,6 +32,28 @@ a {
   padding: 48px 24px;
 }
 
+.page-wide {
+  max-width: 960px;
+}
+
+.page-heading, .row-between, .button-row {
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  display: flex;
+}
+
+.button-row {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.stack {
+  flex-direction: column;
+  gap: 12px;
+  display: flex;
+}
+
 .card {
   border: 1px solid var(--border);
   background: var(--bg-subtle);
@@ -52,16 +74,28 @@ a {
   font-weight: 600;
 }
 
-.field input {
+.field input, .field select, .field textarea {
   border: 1px solid var(--border);
+  font-size: 15px;
+  font: inherit;
   border-radius: 6px;
   padding: 10px 12px;
-  font-size: 15px;
 }
 
-.field input:focus-visible {
+.field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.inline-fields {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  display: grid;
 }
 
 button {
@@ -88,6 +122,38 @@ button:disabled {
 button.secondary {
   color: var(--accent);
   background: #fff;
+}
+
+button.compact {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+button.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+button.plain-row {
+  width: 100%;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.data-table th, .data-table td {
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 6px;
 }
 
 .error-text {
